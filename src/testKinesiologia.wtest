@@ -1,0 +1,196 @@
+import pacientes.*
+import aparatos.*
+import centro.*
+
+describe "Tests parte 1" {
+	/* Creo los pacientes */
+	const leonardo = new Paciente(edad = 40, dolor = 10, fortalezaMuscular = 20)
+	const milena = new Paciente(edad = 3, dolor = 30, fortalezaMuscular = 50)
+	
+	/* Creo los aparatos */
+	const mag1 = new Magneto()
+	const bici1 = new Bicicleta()
+	const mini1 = new Minitramp()
+	
+	test "Leonardo puede usar los tres aparatos" {
+		assert.that(leonardo.puedeUsar(mag1) and leonardo.puedeUsar(bici1) and leonardo.puedeUsar(mini1))
+	}
+	test "Milena puede usar sólo el magneto" {
+		assert.that(milena.puedeUsar(mag1) and not milena.puedeUsar(bici1) and not milena.puedeUsar(mini1))
+	}
+	test "Después de usar el magneto una vez, el nivel de dolor de Leonardo baja a 9" {
+		leonardo.usarAparato(mag1)
+		assert.equals(leonardo.dolor(), 9)
+	}
+	test "Después de usar el magneto una vez, el nivel de dolor de Milena baja a 27" {
+		milena.usarAparato(mag1)
+		assert.equals(milena.dolor(), 27)
+	}
+	test "Después de usar la bicicleta una vez, el nivel de dolor de Leonardo baja a 6, y la fortaleza sube a 23" {
+		leonardo.usarAparato(bici1)
+	    assert.that(leonardo.dolor() == 6 and leonardo.fortalezaMuscular() == 23)
+	}
+	test "Después de usar el minitramp una vez, la fortaleza de Leonardo sube a 24" {
+		leonardo.usarAparato(mini1)
+		assert.equals(leonardo.fortalezaMuscular(), 24)
+	}
+}
+
+describe "tests parte 2" {
+	/* Creo los mismos pacientes */
+	const leonardo = new Paciente(edad = 40, dolor = 10, fortalezaMuscular = 20)
+	const milena = new Paciente(edad = 3, dolor = 30, fortalezaMuscular = 50)
+	
+	/* Creo los aparatos y las rutinas*/
+	const biciLeonardo = new Bicicleta()
+	const rutinaLeonardo = [biciLeonardo, new Minitramp(), biciLeonardo, new Magneto()]
+	const rutinaMilena = [new Magneto(), new Bicicleta()]
+	
+	method initialize() {
+		leonardo.agregarRutina(rutinaLeonardo)
+		milena.agregarRutina(rutinaMilena)
+	}
+	
+	test "Leonardo puede hacer la rutina que tiene asignada" {
+		assert.that(leonardo.puedeRealizarRutina())
+	}
+	
+	test "Leonardo después de hacer su rutina una vez, su nivel de dolor baja a 1.8" {
+		leonardo.realizarSesionCompleta()
+		assert.equals(leonardo.dolor(), 1.8)
+	}
+	test "Leonardo después de hacer su rutina una vez, su nivel de fortaleza sube a 30" {
+		leonardo.realizarSesionCompleta()
+		assert.equals(leonardo.fortalezaMuscular(), 30)
+	}
+	test "Milena no puede hacer la rutina que tiene asignada" {
+		assert.notThat(milena.puedeRealizarRutina())
+	}
+}
+
+describe "tests parte 3" {
+	/* Creo las personas */
+	const nicolas = new PacienteResistente(edad = 40, dolor = 10, fortalezaMuscular = 20)
+	const victoria = new PacienteCaprichoso(edad = 30, dolor = 10, fortalezaMuscular = 40)
+	const julian = new PacienteCaprichoso(edad = 20, dolor = 54, fortalezaMuscular = 50)
+	const zoe = new PacienteRapidaRecuperacion(edad = 50, dolor = 14, fortalezaMuscular = 40, cantidadDeDolorDecrementado = 2)
+	
+	/* Creo rutinas y aparatos*/
+	const nicolasBicicleta = new Bicicleta()
+	const nicolasRutina = [nicolasBicicleta, new Minitramp(), nicolasBicicleta, new Magneto()]
+	const julianRutina = [new Bicicleta(color = "rojo"), new Magneto(color = "verde"), new Bicicleta()]
+	
+	method initialize() {
+		nicolas.agregarRutina(nicolasRutina)
+		victoria.agregarRutina(nicolasRutina)
+		julian.agregarRutina(julianRutina)
+		zoe.agregarRutina(nicolasRutina)
+	}
+	
+	test "Nicolás puede hacer la rutina que tiene asignada" {
+		assert.that(nicolas.puedeRealizarRutina())
+	}
+	test "Nicolás después de hacer su rutina una vez, su nivel de dolor baja a 1.8" {
+		nicolas.realizarSesionCompleta()
+		assert.equals(nicolas.dolor(), 1.8)
+	}
+	test "Nicolás después de hacer su rutina una vez, su nivel de fortaleza sube a 34" {
+		nicolas.realizarSesionCompleta()
+		assert.equals(nicolas.fortalezaMuscular(), 34)
+	}
+	test "Victoria no puede hacer la rutina que tiene asignada" {
+		assert.notThat(victoria.puedeRealizarRutina())
+	}
+	test "Julián puede hacer la rutina que tiene asignada" {
+		assert.that(julian.puedeRealizarRutina())
+	}
+	test "Julián después de hacer su rutina una vez, su nivel de dolor baja a 29.3" {
+		julian.realizarSesionCompleta()
+		assert.equals(julian.dolor(), 29.3)
+	}
+	test "Julián después de hacer su rutina una vez, su nivel de fortaleza sube a 62" {
+		julian.realizarSesionCompleta()
+		assert.equals(julian.fortalezaMuscular(), 62)
+	}
+	test "Zoe puede hacer la rutina que tiene asignada" {
+		assert.that(zoe.puedeRealizarRutina())
+	}
+	test "Zoe luego de realizar su rutina con un valor de decremento de dolor de 2, su dolor baja a 3.4" {
+		zoe.realizarSesionCompleta()
+		assert.equals(zoe.dolor(), 3.4)
+	}
+	test "Zoe luego de realizar su rutina con un valor de decremento de dolor de 2, su fortaleza sube a 51" {
+		zoe.realizarSesionCompleta()
+		assert.equals(zoe.fortalezaMuscular(), 51)
+	}
+}
+
+describe "Tests parte 4" {
+	/* Creo las personas */
+	const nicolas = new PacienteResistente(edad = 40, dolor = 10, fortalezaMuscular = 20)
+	const victoria = new PacienteCaprichoso(edad = 30, dolor = 10, fortalezaMuscular = 40)
+	const julian = new PacienteCaprichoso(edad = 20, dolor = 54, fortalezaMuscular = 50)
+	const zoe = new PacienteRapidaRecuperacion(edad = 50, dolor = 14, fortalezaMuscular = 40, cantidadDeDolorDecrementado = 2)
+	
+	/* Creo rutinas y aparatos*/
+	const nicolasBicicleta = new Bicicleta()
+	const nicolasRutina = [nicolasBicicleta, new Minitramp(), nicolasBicicleta, new Magneto()]
+	const julianRutina = [new Bicicleta(color = "rojo"), new Magneto(color = "verde"), new Bicicleta()]
+	
+	/* Agrego los aparatos y los pacientes al registro dsel centro de kinesiologia */
+	method initialize() {
+		nicolas.agregarRutina(nicolasRutina)
+		victoria.agregarRutina(nicolasRutina)
+		julian.agregarRutina(julianRutina)
+		zoe.agregarRutina(nicolasRutina)
+		
+		centro.agregarAparatos(nicolasRutina)
+		centro.agregarAparatos(julianRutina)
+		centro.agregarPacientes([nicolas, victoria, julian, zoe])
+	}
+	
+	test "Los colores de los aparatos es: Blanco, rojo y verde" {
+		assert.equals(centro.coloresDeAparatos(), #{"blanco", "rojo", "verde"})
+	}
+	
+	test "Los pacientes menores a 8 años es ninguno" {
+		assert.that(centro.pacientesMenoresA8Anios().isEmpty())
+	}
+	
+	test "La cantidad de pacientes que no pueden hacer sus rutinas es 1" {
+		assert.equals(centro.pacientesQueNoPuedenRealizarSuSesion(), 1)
+	}
+}
+
+describe "Tests parte 5" {
+	/* Creo las personas */
+	const nicolas = new PacienteResistente(edad = 40, dolor = 10, fortalezaMuscular = 20)
+	const victoria = new PacienteCaprichoso(edad = 30, dolor = 10, fortalezaMuscular = 40)
+	const julian = new PacienteCaprichoso(edad = 20, dolor = 54, fortalezaMuscular = 50)
+	const zoe = new PacienteRapidaRecuperacion(edad = 50, dolor = 14, fortalezaMuscular = 40, cantidadDeDolorDecrementado = 2)
+	
+	/* Creo rutinas y aparatos*/
+	const nicolasBicicleta = new Bicicleta()
+	const nicolasRutina = [nicolasBicicleta, new Minitramp(), nicolasBicicleta, new Magneto()]
+	const julianRutina = [new Bicicleta(color = "rojo"), new Magneto(color = "verde"), new Bicicleta()]
+	
+	/* Agrego los aparatos y los pacientes al registro dsel centro de kinesiologia */
+	method initialize() {
+		centro.agregarAparatos(nicolasRutina)
+		centro.agregarAparatos(julianRutina)
+		centro.agregarPacientes([nicolas, victoria, julian, zoe])
+	}
+	
+	test "Los aparatos estan en optimas condiciones" {
+		assert.that(centro.estaEnOptmiasCondiciones())
+	}
+	test "El centro no esta complicado" {
+		assert.notThat(centro.estaComplicado())
+	}
+	test "luego de 750 rutinas, el centro está complicado. Va el tecnico y ya no lo está" {
+		(1..750).forEach({i => nicolas.realizarSesionCompleta() ; julian.realizarSesionCompleta()})
+		assert.that(centro.estaComplicado())
+		centro.visitaDeTecnico()
+		assert.notThat(centro.estaComplicado())
+	}
+}
